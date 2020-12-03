@@ -83,6 +83,9 @@ pub use schedstat::*;
 mod task;
 pub use task::*;
 
+mod pagemap;
+pub use pagemap::*;
+
 // provide a type-compatible st_uid for windows
 #[cfg(windows)]
 trait FakeMedatadataExt {
@@ -943,6 +946,13 @@ impl Process {
         }
 
         Ok(vec)
+    }
+
+    /// Return a struct that can be used to access information in the `/proc/pid/pagemap` file efficiently.
+    pub fn pagemap(&self) -> ProcResult<PageMap> {
+        let path = self.root.join("pagemap");
+        let file = FileWrapper::open(&path)?;
+        Ok(PageMap::from_file_wrapper(file))
     }
 
     /// Gets the number of open file descriptors for a process

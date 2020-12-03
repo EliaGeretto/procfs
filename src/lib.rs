@@ -57,7 +57,7 @@ use libc::{_SC_CLK_TCK, _SC_PAGESIZE};
 
 use std::fmt;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Read, Write};
+use std::io::{self, BufRead, BufReader, Read, Seek, Write};
 use std::mem;
 use std::os::raw::c_char;
 use std::path::{Path, PathBuf};
@@ -400,6 +400,12 @@ impl Read for FileWrapper {
     }
     fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
         wrap_io_error!(self.path, self.inner.read_exact(buf))
+    }
+}
+
+impl Seek for FileWrapper {
+    fn seek(&mut self, pos: io::SeekFrom) -> io::Result<u64> {
+        wrap_io_error!(self.path, self.inner.seek(pos))
     }
 }
 
